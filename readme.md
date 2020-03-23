@@ -23,3 +23,21 @@ they are considered duplicates.
 A business rule violation is not consired an error, since in the real world they may happen. In case any happens, you must list
 them in the output as an array, and have no changes applied for that order, following to process the next order.
 
+## Technologies
+
+- PHP version >= 5.6.4 
+- Laravel version 5.4
+- Mysql version 5.6.43
+
+## Configuration Project
+
+The following instruction will help you through the set up of this project:
+
+- Navigate to folder where web developments are allocated.
+- On the command line, run git clone https://github.com/ohmalvarez/orders.git
+- Create Data Model from schema.sql file.
+- On the root path, copy and paste the .env.example with the name .env
+- Edit .env file to set DB host, DB port, DB name, DB user and DB password.
+
+## Api Requests
+
