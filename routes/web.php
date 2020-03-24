@@ -14,3 +14,10 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::group(['prefix' => 'accounts'], function (){
+
+    Route::post('/',    ['as' => 'accounts.create', 'uses' => 'AccountController@store']);
+
+    Route::post('/{id}/orders', ['as' => 'accounts.orders', 'uses' => 'AccountController@orders']);
+});
