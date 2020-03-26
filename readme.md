@@ -1,6 +1,7 @@
 <p align="center"><img src="https://www.gbm.com.mx/Content/Images/logo.png"></p>
 
-## About this challenge
+About this challenge
+==
 
 A brokerage firm needs to have an API service to process a set of buy/sell orders.
 
@@ -44,6 +45,33 @@ The following instruction will help you through the set up of this project:
 
 Both request needs a header param **'TOKEN'** with the value of the APP_KEY param equals to that value, otherwise cannot be possible to reach the apis.
 
-Also, both apis are POST method.
+Also, both apis are **POST method**.
+
+## Create Investment Account
+
+Endpoint: /accounts
+
+Body Params:
+
+{
+
+    "cash" : numeric
+
+} 
 
 
+## Send a buy/sell Order
+
+Endpoint: /accounts/{id}/orders
+
+Body Params:
+
+{
+
+    "timestamp" : numeric,
+    "operation" : string("BUY","SELL"),
+    "issuer_name" : string(long: 255),
+    "total_shares" : integer,
+    "share_price" : numeric
+
+}
