@@ -10,10 +10,11 @@ class Operation extends Model
     protected $table = "operation";
     public $timestamps = false;
 
-    public function totalCashOrder($params){
+    public function scopeBytype($query,$type){
+        return $query->where('type',$type);
     }
 
-    public function availableOperationTime($data){
-
+    public function  scopeByorderid($query,$id){
+        return $query->where('id_order',$id);
     }
 }
