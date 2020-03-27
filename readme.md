@@ -90,7 +90,7 @@ Expected response example:
     
 ---
 
-For a better experience, you can check the Collection on `Postman` to see how apis are consumed. Just copy and paste this route on Postman _(https://www.getpostman.com/collections/6a1f0c3fa5509b0e28a6)_ or click on the next to see it on a Postman page [link](https://documenter.getpostman.com/view/5837810/SzYW2zmd "Postman Collection")
+For a better experience, you can check the Collection on `Postman` to see how apis are consumed. Just copy and paste this route on Postman _(https://www.getpostman.com/collections/6a1f0c3fa5509b0e28a6)_ or click on the next link to see documentation on a Postman page [link](https://documenter.getpostman.com/view/5837810/SzYW2zmd "Postman Collection").
 
 ##### Enjoy! 
 
