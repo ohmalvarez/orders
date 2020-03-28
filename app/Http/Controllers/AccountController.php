@@ -25,14 +25,15 @@ class AccountController extends Controller
 //            Validate initial requirements
             if ($this->app_key !== $this->token)
                 exit($this->generalResponse(self::CREDENTIALS));
-
             if (empty($this->params))
                 exit($this->generalResponse(self::MISSING_DATA));
 
 //            Validation Rules. At this moment only there are two validation: day of the week and hour of day.
             $validationRules = $this->accountsObj->validateRules(["now" => $this->date->toTimeString(), "dayWeek" => $this->date->format('l')]);
-            if ($validationRules !== [])
-                exit($this->generalResponse(array_push($validationRules,self::MISSING_RULE)));
+            if ($validationRules !== []){
+                array_push($validationRules,self::MISSING_RULE);
+                exit($this->generalResponse($validationRules));
+            }
 
         }catch (\Exception $exception){
             exit($this->generalResponse($exception->getMessage(),$exception->getCode()));
@@ -83,17 +84,22 @@ class AccountController extends Controller
                 if ($arrError["business_errors"] == null){
                     $timestampTostr = $this->accountsObj->timestampToDatetimeStr($this->params["timestamp"]);
 
-                    Operation::insert([
-                        "id_order" => $id,
-                        "issuer_name" => $this->params["issuer_name"],
-                        "type" => $this->params["operation"],
-                        "shares" => $this->params["total_shares"],
-                        "price" => $this->params["share_price"],
-                        "created_at" => $timestampTostr
-                    ]);
+                    switch ($this->params["operation"]) {
+                        case 'BUY':
+                            Operation::insert(["id_order" => $id,
+                                "issuer_name" => $this->params["issuer_name"],
+                                "type" => $this->params["operation"],
+                                "shares" => $this->params["total_shares"],
+                                "price" => $this->params["share_price"],
+                                "created_at" => $timestampTostr]);
+                        break;
+                        case 'SELL':
+                            Operation::where(["id_order" => $id, "issuer_name" => $this->params["issuer_name"]])->update(["shares" => $this->params["total_shares"]]);
+                        break;
+                    }
 
 //                    Create array response current_balance
-                    $result["current_balance"]["issuers"] = Operation::select("issuer_name","shares as total_shares","price as share_price")->byorderid($id)->bytype($this->params["operation"])->get()->toArray();
+                    $result["current_balance"]["issuers"] = Operation::select("issuer_name","shares as total_shares","price as share_price")->byorderid($id)->get()->toArray();
                     $result["current_balance"]["cash"] = $transacition["new_cash"];
                 }
 

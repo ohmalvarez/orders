@@ -33,9 +33,9 @@ class Accounts extends Model
             $result = [];
 
             if ( isset($params["now"]) && ($params["now"] < "06:00:00" || $params["now"] > "15:00:00"))
-                $result[] = "CLOSE_MARKET";
+                $result[] = "CLOSE_MARKET. Unavailable hour.";
             if ( isset($params["dayWeek"]) && ($params["dayWeek"] === "Saturday" || $params["dayWeek"] === "Sunday") )
-                $result[] = "CLOSE_MARKET";
+                $result[] = "CLOSE_MARKET. Unavailable day.";
 //            validations to buy/sell
             if (isset($params["operation"])) {
                 if ( $params["operation"] == "BUY" && $params["bigTotal"] > $params["newCash"] )
@@ -58,11 +58,11 @@ class Accounts extends Model
             $bigTotal = $params["total_shares"] * $params["share_price"];// Total amount to buy or sell
 
             $order = Orders::find($id)->toArray();
-            $operations = $this->totalOperationsByTypeId(["id_order" => $id, "type" => $params["operation"]]);
+            $operations = $this->totalOperationsById($id);
             $lastOperation = $this->lastOperationCreatedById($id);
             $lastOperation = ($lastOperation != null) ? $lastOperation->toArray() : null;
 
-            $new_cash = ($params["operation"] == "BUY") ? ($order["cash"] - $operations["totals"]) : "";
+            $new_cash = ($order["cash"] - $operations["totals"]) ;
 
             $result["errors"] = $this->validateRules([
                 "newCash" =>  $new_cash,
@@ -72,7 +72,7 @@ class Accounts extends Model
                 "last_op_time" => isset($lastOperation["created_at"]) ? Carbon::createFromTimeString($lastOperation["created_at"]) : null,
                 "operation" => $params["operation"] ]);
 
-            $result["new_cash"] = ($params["operation"] == "BUY") ? ($new_cash - $bigTotal) : "";
+            $result["new_cash"] = ($params["operation"] == "BUY") ? ($new_cash - $bigTotal) : ($new_cash + $bigTotal);
             
             return $result;
         }catch (\Exception $exception){
@@ -88,13 +88,14 @@ class Accounts extends Model
         return Operation::byorderid($id)->orderBy('created_at', 'desc')->first();
     }
 
-    public function totalOperationsByTypeId($params){
+    public function totalOperationsById($id){
         $shares = $totals = 0;
-        $rslt = Operation::byorderid($params["id_order"])->bytype($params["type"])->get()->toArray();
+        $rslt = Operation::byorderid($id)->get()->toArray();
 
         foreach ($rslt as $item){
-            $shares += $item["shares"];
             $totals += ($item["shares"] * $item["price"]);
+            if ( $item["type"] == "BUY" )
+                $shares += $item["shares"];
         }
 
         return ["shares" => $shares, "totals" => $totals];
